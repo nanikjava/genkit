@@ -18,7 +18,7 @@ import { RuntimeManager } from '@genkit-ai/tools-common/manager';
 import { record } from '@genkit-ai/tools-common/utils';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import z from 'zod';
-import { McpRunToolEvent } from './analytics.js';
+import { McpRunToolEvent } from './analytics';
 
 export function defineFlowTools(server: McpServer, manager: RuntimeManager) {
   server.registerTool(

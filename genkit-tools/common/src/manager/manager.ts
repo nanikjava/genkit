@@ -74,6 +74,8 @@ export class RuntimeManager {
    * Creates a new runtime manager.
    */
   static async create(options: RuntimeManagerOptions) {
+    logger.info(`runtimemanager.... create.....`);
+
     const manager = new RuntimeManager(
       options.telemetryServerUrl,
       options.manageHealth ?? true,
@@ -185,6 +187,8 @@ export class RuntimeManager {
           : 'No runtimes found. Make sure your app is running using `genkit start -- ...`. See getting started documentation.'
       );
     }
+    logger.info(`runAction...`);
+
     if (streamingCallback) {
       const response = await axios
         .post(
@@ -256,6 +260,8 @@ export class RuntimeManager {
       });
       return promise;
     } else {
+      logger.info(`**** ${runtime.reflectionServerUrl}/api/runAction`);
+      logger.info(JSON.stringify(input, null, 2));
       const response = await axios
         .post(`${runtime.reflectionServerUrl}/api/runAction`, input, {
           headers: {

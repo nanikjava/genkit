@@ -24,7 +24,7 @@ import os from 'os';
 import path from 'path';
 import z from 'zod';
 import { version } from '../utils/version';
-import { McpRunToolEvent } from './analytics.js';
+import { McpRunToolEvent } from './analytics';
 
 const DOCS_URL =
   process.env.GENKIT_DOCS_BUNDLE_URL ??

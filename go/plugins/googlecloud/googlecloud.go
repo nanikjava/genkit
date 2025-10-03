@@ -30,7 +30,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	 texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 

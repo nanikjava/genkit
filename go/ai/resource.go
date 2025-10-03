@@ -25,6 +25,7 @@ import (
 
 	"github.com/firebase/genkit/go/core"
 	"github.com/firebase/genkit/go/core/api"
+	"github.com/firebase/genkit/go/core/logger"
 	"github.com/yosida95/uritemplate/v3"
 )
 
@@ -135,6 +136,8 @@ func DefineResource(r api.Registry, name string, opts *ResourceOptions, fn Resou
 // NewResource creates a resource but does not register it in the registry.
 // It can be registered later via the Register method.
 func NewResource(name string, opts *ResourceOptions, fn ResourceFunc) Resource {
+	logger.FromContext(context.Background()).Info("NewResource = " + name)
+
 	metadata := resourceMetadata(name, opts)
 	metadata["dynamic"] = true
 	return &resource{ActionDef: *core.NewAction(name, api.ActionTypeResource, metadata, nil, fn)}

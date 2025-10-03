@@ -115,10 +115,10 @@ type ModelOptions struct {
 func DefineGenerateAction(ctx context.Context, r api.Registry) *generateAction {
 	return (*generateAction)(core.DefineStreamingAction(r, "generate", api.ActionTypeUtil, nil, nil,
 		func(ctx context.Context, actionOpts *GenerateActionOptions, cb ModelStreamCallback) (resp *ModelResponse, err error) {
-			logger.FromContext(ctx).Debug("GenerateAction",
+			logger.FromContext(ctx).Info("GenerateAction",
 				"input", fmt.Sprintf("%#v", actionOpts))
 			defer func() {
-				logger.FromContext(ctx).Debug("GenerateAction",
+				logger.FromContext(ctx).Info("GenerateAction",
 					"output", fmt.Sprintf("%#v", resp),
 					"err", err)
 			}()

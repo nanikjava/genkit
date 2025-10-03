@@ -38,7 +38,7 @@ import {
 import { start } from './commands/start';
 import { uiStart } from './commands/ui-start';
 import { uiStop } from './commands/ui-stop';
-import { detectCLIRuntime } from './utils/runtime-detector.js';
+import { detectCLIRuntime } from './utils/runtime-detector';
 import { showUpdateNotification } from './utils/updates';
 import { version } from './utils/version';
 
@@ -61,6 +61,7 @@ const commands: Command[] = [
   start,
   mcp,
 ];
+
 
 /** Main entry point for CLI. */
 export async function startCLI(): Promise<void> {

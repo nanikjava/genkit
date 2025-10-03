@@ -104,6 +104,8 @@ export class ReflectionServer {
    * The server will be registered to be shut down on process exit.
    */
   async start() {
+    logger.info(`start() in ReflectionServer...`);
+
     const server = express();
 
     server.use(express.json({ limit: this.options.bodyLimit }));
@@ -159,7 +161,7 @@ export class ReflectionServer {
     server.post('/api/runAction', async (request, response, next) => {
       const { key, input, context, telemetryLabels } = request.body;
       const { stream } = request.query;
-      logger.debug(`Running action \`${key}\` with stream=${stream}...`);
+      logger.info(`Running action \`${key}\` with stream=${stream}...`);
       try {
         const action = await this.registry.lookupAction(key);
         if (!action) {

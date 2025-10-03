@@ -96,7 +96,7 @@ func startReflectionServer(ctx context.Context, g *Genkit, errCh chan<- error, s
 		},
 	}
 
-	slog.Debug("starting reflection server", "addr", s.Addr)
+	slog.Info("---->> starting reflection server", "addr", s.Addr)
 
 	if err := s.writeRuntimeFile(s.Addr); err != nil {
 		errCh <- fmt.Errorf("failed to write runtime file: %w", err)
@@ -254,7 +254,7 @@ func serveMux(g *Genkit) *http.ServeMux {
 func wrapReflectionHandler(h func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		logger.FromContext(ctx).Debug("request start", "method", r.Method, "path", r.URL.Path)
+		logger.FromContext(ctx).Info("request start", "method", r.Method, "path", r.URL.Path)
 
 		var err error
 		defer func() {
@@ -280,6 +280,7 @@ func wrapReflectionHandler(h func(w http.ResponseWriter, r *http.Request) error)
 func handleRunAction(g *Genkit) func(w http.ResponseWriter, r *http.Request) error {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := r.Context()
+		logger.FromContext(ctx).Info("------handleRunAction")
 
 		var body struct {
 			Key             string          `json:"key"`
@@ -297,7 +298,7 @@ func handleRunAction(g *Genkit) func(w http.ResponseWriter, r *http.Request) err
 			return err
 		}
 
-		logger.FromContext(ctx).Debug("running action", "key", body.Key, "stream", stream)
+		logger.FromContext(ctx).Info("running action", "key", body.Key, "stream", stream)
 
 		var cb streamingCallback[json.RawMessage]
 		if stream {
@@ -444,6 +445,8 @@ type telemetry struct {
 
 func runAction(ctx context.Context, g *Genkit, key string, input json.RawMessage, telemetryLabels json.RawMessage, cb streamingCallback[json.RawMessage], runtimeContext map[string]any) (*runActionResponse, error) {
 	action := g.reg.ResolveAction(key)
+	logger.FromContext(ctx).Info("runAction---")
+
 	if action == nil {
 		return nil, core.NewError(core.NOT_FOUND, "action %q not found", key)
 	}
@@ -468,6 +471,7 @@ func runAction(ctx context.Context, g *Genkit, key string, input json.RawMessage
 		defer span.End()
 
 		traceID = span.SpanContext().TraceID().String()
+
 		return action.RunJSON(ctx, input, cb)
 	}()
 	if err != nil {

@@ -22,9 +22,13 @@ import (
 
 	"github.com/firebase/genkit/go/ai"
 	"github.com/firebase/genkit/go/genkit"
-	"github.com/firebase/genkit/go/plugins/firebase"
 	"github.com/firebase/genkit/go/plugins/googlegenai"
 	"github.com/firebase/genkit/go/plugins/server"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"google.golang.org/genai"
 )
 
@@ -41,9 +45,30 @@ func main() {
 	ctx := context.Background()
 
 	// Initialize Firebase telemetry
-	firebase.EnableFirebaseTelemetry(&firebase.FirebaseTelemetryOptions{
-		ForceDevExport: true, // Force telemetry export in development
-	})
+	// firebase.EnableFirebaseTelemetry(&firebase.FirebaseTelemetryOptions{
+	// 	ForceDevExport: true, // Force telemetry export in development
+	// })
+	// Configure OTLP/HTTP exporter to Jaeger collector
+	exp, err := otlptracehttp.New(ctx,
+		otlptracehttp.WithEndpoint("localhost:4318"), // OTLP/HTTP endpoint for Jaeger
+		otlptracehttp.WithInsecure(),                 // No TLS for local dev
+	)
+	if err != nil {
+		log.Fatalf("failed to create OTLP trace exporter: %v", err)
+	}
+	res, err := resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceName("my-service"), // Change service name
+		),
+	)
+	if err != nil {
+		log.Fatalf("failed to create resource: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exp),
+		sdktrace.WithResource(res),
+	)
+	otel.SetTracerProvider(tp)
 
 	// Initialize Genkit with plugins
 	g := genkit.Init(ctx, genkit.WithPlugins(

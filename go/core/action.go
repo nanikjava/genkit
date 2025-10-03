@@ -62,6 +62,8 @@ func NewAction[In, Out any](
 	inputSchema map[string]any,
 	fn Func[In, Out],
 ) *ActionDef[In, Out, struct{}] {
+	logger.FromContext(context.Background()).Info("NewAction=", name)
+
 	return newAction(name, atype, metadata, inputSchema,
 		func(ctx context.Context, in In, cb noStream) (Out, error) {
 			return fn(ctx, in)
@@ -77,6 +79,8 @@ func NewStreamingAction[In, Out, Stream any](
 	inputSchema map[string]any,
 	fn StreamingFunc[In, Out, Stream],
 ) *ActionDef[In, Out, Stream] {
+	logger.FromContext(context.Background()).Info("NewStreamingAction=", name)
+
 	return newAction(name, atype, metadata, inputSchema, fn)
 }
 
@@ -90,6 +94,8 @@ func DefineAction[In, Out any](
 	inputSchema map[string]any,
 	fn Func[In, Out],
 ) *ActionDef[In, Out, struct{}] {
+	logger.FromContext(context.Background()).Info("DefineAction=", name)
+
 	return defineAction(r, name, atype, metadata, inputSchema,
 		func(ctx context.Context, in In, cb noStream) (Out, error) {
 			return fn(ctx, in)
@@ -106,6 +112,8 @@ func DefineStreamingAction[In, Out, Stream any](
 	inputSchema map[string]any,
 	fn StreamingFunc[In, Out, Stream],
 ) *ActionDef[In, Out, Stream] {
+	logger.FromContext(context.Background()).Info("DefineStreamingAction=", name)
+
 	return defineAction(r, name, atype, metadata, inputSchema, fn)
 }
 
@@ -118,6 +126,8 @@ func defineAction[In, Out, Stream any](
 	inputSchema map[string]any,
 	fn StreamingFunc[In, Out, Stream],
 ) *ActionDef[In, Out, Stream] {
+	logger.FromContext(context.Background()).Info("defineAction=", name)
+
 	a := newAction(name, atype, metadata, inputSchema, fn)
 	provider, id := api.ParseName(name)
 	key := api.NewKey(atype, provider, id)
@@ -135,6 +145,7 @@ func newAction[In, Out, Stream any](
 	inputSchema map[string]any,
 	fn StreamingFunc[In, Out, Stream],
 ) *ActionDef[In, Out, Stream] {
+	logger.FromContext(context.Background()).Info("newAction=", name)
 	if inputSchema == nil {
 		var i In
 		if reflect.ValueOf(i).Kind() != reflect.Invalid {
@@ -174,11 +185,11 @@ func (a *ActionDef[In, Out, Stream]) Name() string { return a.desc.Name }
 
 // Run executes the Action's function in a new trace span.
 func (a *ActionDef[In, Out, Stream]) Run(ctx context.Context, input In, cb StreamCallback[Stream]) (output Out, err error) {
-	logger.FromContext(ctx).Debug("Action.Run",
+	logger.FromContext(ctx).Info("Action.Run",
 		"name", a.Name,
 		"input", fmt.Sprintf("%#v", input))
 	defer func() {
-		logger.FromContext(ctx).Debug("Action.Run",
+		logger.FromContext(ctx).Info("Action.Run",
 			"name", a.Name,
 			"output", fmt.Sprintf("%#v", output),
 			"err", err)
@@ -209,6 +220,8 @@ func (a *ActionDef[In, Out, Stream]) Run(ctx context.Context, input In, cb Strea
 			}
 			var output Out
 			if err == nil {
+				logger.FromContext(ctx).Info("a.----", a)
+
 				output, err = a.fn(ctx, input, cb)
 				if err == nil {
 					if err = base.ValidateValue(output, a.desc.OutputSchema); err != nil {
@@ -230,6 +243,8 @@ func (a *ActionDef[In, Out, Stream]) Run(ctx context.Context, input In, cb Strea
 // RunJSON runs the action with a JSON input, and returns a JSON result.
 func (a *ActionDef[In, Out, Stream]) RunJSON(ctx context.Context, input json.RawMessage, cb StreamCallback[json.RawMessage]) (json.RawMessage, error) {
 	// Validate input before unmarshaling it because invalid or unknown fields will be discarded in the process.
+	logger.FromContext(ctx).Info("RunJSON----ActionDef")
+
 	if err := base.ValidateJSON(input, a.desc.InputSchema); err != nil {
 		return nil, NewError(INVALID_ARGUMENT, err.Error())
 	}
