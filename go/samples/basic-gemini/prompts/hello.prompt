@@ -1,0 +1,22 @@
+---
+model: googleai/gemini-2.5-flash
+config:
+  temperature: 0.5
+input:
+  schema:
+    country_name?: string  
+  default:
+    name: Australia    
+output:
+  format: json
+  schema:
+    countries(array, A list of countries with economic information):
+      name: string, Name of the country
+      habitants: integer, Number of inhabitants in the country
+      language: string, Official language of the country
+      gdp: number, Total GDP for current year
+
+---
+
+Find information about the country named {{country_name}} as specified by the user.
+

@@ -74,7 +74,7 @@ export class RuntimeManager {
    * Creates a new runtime manager.
    */
   static async create(options: RuntimeManagerOptions) {
-    logger.info(`runtimemanager.... create.....`);
+    logger.info(`runtimemanager.... --- create.....`);
 
     const manager = new RuntimeManager(
       options.telemetryServerUrl,
@@ -349,6 +349,8 @@ export class RuntimeManager {
   private async setupRuntimesWatcher() {
     try {
       const runtimesDir = await findRuntimesDir(this.projectRoot);
+      logger.info('setupRuntimesWatcher....' + runtimesDir);
+
       await fs.mkdir(runtimesDir, { recursive: true });
       const watcher = chokidar.watch(runtimesDir, {
         persistent: true,
@@ -439,10 +441,16 @@ export class RuntimeManager {
    */
   private async handleNewRuntime(filePath: string) {
     try {
+      logger.info(`filePath ${filePath}.`);
+
       const { content, runtimeInfo } = await retriable(
         async () => {
           const content = await fs.readFile(filePath, 'utf-8');
+          logger.info('Content - ' + content);
+
           const runtimeInfo = JSON.parse(content) as RuntimeInfo;
+          logger.info('runtimeInfo - ' + runtimeInfo);
+
           runtimeInfo.projectName = projectNameFromGenkitFilePath(filePath);
           return { content, runtimeInfo };
         },

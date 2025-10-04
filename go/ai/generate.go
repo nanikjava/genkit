@@ -115,7 +115,7 @@ type ModelOptions struct {
 func DefineGenerateAction(ctx context.Context, r api.Registry) *generateAction {
 	return (*generateAction)(core.DefineStreamingAction(r, "generate", api.ActionTypeUtil, nil, nil,
 		func(ctx context.Context, actionOpts *GenerateActionOptions, cb ModelStreamCallback) (resp *ModelResponse, err error) {
-			logger.FromContext(ctx).Info("GenerateAction",
+			logger.FromContext(ctx).Info("--GenerateAction",
 				"input", fmt.Sprintf("%#v", actionOpts))
 			defer func() {
 				logger.FromContext(ctx).Info("GenerateAction",
@@ -130,6 +130,7 @@ func DefineGenerateAction(ctx context.Context, r api.Registry) *generateAction {
 			}
 			return tracing.RunInNewSpan(ctx, spanMetadata, actionOpts,
 				func(ctx context.Context, actionOpts *GenerateActionOptions) (*ModelResponse, error) {
+					logger.FromContext(ctx).Info("--Going into GenerateWithRequest")
 					return GenerateWithRequest(ctx, r, actionOpts, nil, cb)
 				})
 		}))
@@ -223,6 +224,8 @@ func GenerateWithRequest(ctx context.Context, r api.Registry, opts *GenerateActi
 	}
 
 	m := LookupModel(r, opts.Model)
+	logger.FromContext(ctx).Info("--GenerateWithRequest LookupModel", m.Name())
+
 	if m == nil {
 		return nil, core.NewError(core.NOT_FOUND, "ai.GenerateWithRequest: model %q not found", opts.Model)
 	}

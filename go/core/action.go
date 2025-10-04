@@ -112,7 +112,7 @@ func DefineStreamingAction[In, Out, Stream any](
 	inputSchema map[string]any,
 	fn StreamingFunc[In, Out, Stream],
 ) *ActionDef[In, Out, Stream] {
-	logger.FromContext(context.Background()).Info("DefineStreamingAction=", name)
+	logger.FromContext(context.Background()).Info("DefineStreamingAction==", name)
 
 	return defineAction(r, name, atype, metadata, inputSchema, fn)
 }
@@ -307,6 +307,8 @@ func ResolveActionFor[In, Out, Stream any](r api.Registry, atype api.ActionType,
 	provider, id := api.ParseName(name)
 	key := api.NewKey(atype, provider, id)
 	a := r.ResolveAction(key)
+	logger.FromContext(context.Background()).Info("ResolveActionFor=", key)
+
 	if a == nil {
 		return nil
 	}

@@ -62,3 +62,8 @@ next-env.d.ts
 
 # Code Coverage
 js/plugins/compat-oai/coverage/
+
+
+go/tmp/
+go/samples/basic-gemini/basic_gemini
+go/samples/basic-gemini/tmp/
